@@ -18,7 +18,7 @@ class PublicUserAPITests(TestCase):
         Tests the user API (Public)
     """
 
-    def setup(self):
+    def setUp(self):
         self.client = APIClient()
 
     def test_create_valid_user_success(self):
@@ -26,16 +26,16 @@ class PublicUserAPITests(TestCase):
             Tests Creating user with valid payload is successful
         """
         payload = {
-            "email": "testy@email.com",
-            "password": "testpass",
-            "name": "testname",
+            'email': 'testy@email.com',
+            'password': 'testpass',
+            'name': 'name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         user = get_user_model().objects.get(**res.data)
-        self.assertTrue(user.check_password(payload["password"]))
-        self.assertNotIn("password", res.data)
+        self.assertTrue(user.check_password(payload['password']))
+        self.assertNotIn('password', res.data)
 
     def test_user_exists(self):
         """
@@ -43,8 +43,8 @@ class PublicUserAPITests(TestCase):
         """
         payload = {
             "email": "test@email.com",
-            "password": "testpass",
-            "name": "testname",
+            "password": "pw",
+            "name": "Test",
         }
         create_user(**payload)
         res = self.client.post(CREATE_USER_URL, payload)
@@ -58,12 +58,12 @@ class PublicUserAPITests(TestCase):
         payload = {
             "email": "test@email.com",
             "password": "test",
+            'name': 'Test',
         }
-        create_user(**payload)
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = get_user_model().objects.filter(
-            email=payload["email"],
+            email=payload['email']
         ).exists()
         self.assertFalse(user_exists)
